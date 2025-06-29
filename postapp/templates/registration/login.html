@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block title %}Login | Postknob{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+  <div class="card shadow p-4 login-card" style="max-width: 400px; width: 100%; border-radius: 18px;">
+    <div class="text-center mb-4">
+      <span class="logo-icon" style="font-size:2.2rem;">🕹️</span>
+      <h2 class="fw-bold mb-2" style="color: #FFD700; letter-spacing: 1px;">Login to Postknob</h2>
+      <!-- Slang subtitle here -->
+      <p class="text-secondary mb-1">Step back into the hobnob zone!</p>
+    </div>
+    <form method="post" autocomplete="off">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="id_username" class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" id="id_username" required autofocus>
+      </div>
+      <div class="mb-3">
+        <label for="id_password" class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" id="id_password" required>
+      </div>
+      <button class="btn btn-warning w-100 fw-semibold" type="submit">Log In</button>
+    </form>
+    <!-- Fun slang prompt at the bottom -->
+    <p class="mt-3 mb-0 text-center text-secondary" style="font-size: 1rem;">
+      Not in the club yet?
+      <a href="{% url 'register' %}" class="fw-bold text-decoration-none" style="color: #3d63ea;">Become a hobnobber!</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

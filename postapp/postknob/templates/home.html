@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="message text-center" id="welcome-message">
+  <span class="logo-icon" style="font-size:2.5rem;">🕹️</span>
+  <h1 class="fw-bold mb-3" style="color:#FFD700; font-size:2.5rem;">Welcome to PostKnob</h1>
+  <div class="lead mb-2" style="color:#fff;">Unleash your vibe, share your story, hobnob your world!</div>
+  <a href="{% url 'tweet_create' %}" class="btn btn-warning mt-3 px-4 fw-bold" style="border-radius: 14px;">+ Create Your First Post</a>
+</div>
+
+{% if trending_posts %}
+  <div class="container mt-5">
+    <h2 class="mb-4" style="color:#FFD700; font-size:1.5rem;">Trending on PostKnob</h2>
+    <div class="row g-4">
+      {% for post in trending_posts %}
+        <div class="col-12 col-sm-6 col-md-3 d-flex">
+          <div class="card flex-fill post-card" style="background:#22223b; color:#fff; border-radius: 14px;">
+            {% if post.photo.name %}
+              <img src="{{ post.photo.url }}" class="card-img-top" style="max-height:120px; object-fit:cover; border-top-left-radius:14px; border-top-right-radius:14px;">
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title" style="color:#FFD700;">{{ post.user.username }}</h5>
+              <p class="card-text flex-grow-1" style="font-size:.98rem;">{{ post.text|truncatechars:70 }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+{% if hobnobbers %}
+  <div class="container mt-5 mb-3">
+    <h2 class="mb-3" style="color:#FFD700; font-size:1.2rem;">Meet the Hobnobbers</h2>
+    <div class="d-flex flex-wrap gap-3">
+      {% for user in hobnobbers %}
+        <div class="rounded-pill px-3 py-2 d-flex align-items-center"
+             style="background:#22223b; color:#FFD700; font-weight:600; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+          <img src="{{ user.profile.avatar_url|default:'https://i.imgur.com/1Q9Z1Zm.png' }}"
+               alt="avatar"
+               width="32" height="32"
+               style="border-radius:50%;object-fit:cover;margin-right:8px;">
+          {{ user.username }}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+{% endblock %}

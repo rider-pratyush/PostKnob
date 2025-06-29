@@ -1,0 +1,105 @@
+body {
+    background: #191c24; /* Or #22223b for softer dark */
+    min-height: 100vh;
+}
+#welcome-message {
+    animation: popin 1s cubic-bezier(.68,-0.55,.27,1.55) 0.1s both;
+}
+@keyframes popin {
+    0% { opacity: 0; transform: scale(.8) translateY(30px);}
+    70% { opacity: 1; transform: scale(1.07) translateY(-5px);}
+    100% { opacity: 1; transform: scale(1) translateY(0);}
+}
+
+
+/* Style the homepage message */
+.message {
+    background: #fff;
+    margin-top: 3rem;
+    padding: 2.5rem 2rem;
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    font-size: 2rem;
+    color: #3d63ea;
+    font-weight: 600;
+    letter-spacing: 1px;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Center the message in its container */
+.text-center {
+    text-align: center !important;
+}
+
+/* Navbar "logo" styles */
+.logo-text {
+    font-size: 1.5rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    color: #FFD700 !important;
+    text-shadow: 1px 1px 2px #0002;
+    transition: color 0.2s;
+}
+.logo-text .logo-icon {
+    font-size: 2rem;
+    margin-right: 0.5rem;
+}
+
+/* Adjust navbar buttons */
+.btn-outline-light {
+    border-width: 2px;
+    font-weight: 500;
+}
+.btn-warning {
+    font-weight: 600;
+}
+
+/* Remove underline from links in nav */
+.navbar-nav .nav-link {
+    text-decoration: none !important;
+}
+
+/* On smaller screens, center the logo and stack buttons */
+@media (max-width: 600px) {
+    .logo-text {
+        font-size: 1.2rem !important;
+    }
+    .logo-text .logo-icon {
+        font-size: 1.5rem;
+    }
+}
+
+.post-card {
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 6px 18px 0 rgba(0,0,0,.15);
+    border: none;
+}
+.post-card:hover {
+    transform: translateY(-4px) scale(1.025);
+    box-shadow: 0 12px 24px 0 rgba(0,0,0,.20);
+}
+.card-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.3rem;
+}
+.card .btn {
+    border-radius: 7px;
+    font-weight: 600;
+}
+
+.modal-body {
+    scrollbar-width: thin;
+    scrollbar-color: #FFD700 #181826;
+}
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+    background: #181826;
+}
+.modal-body::-webkit-scrollbar-thumb {
+    background: #FFD700;
+    border-radius: 4px;
+}

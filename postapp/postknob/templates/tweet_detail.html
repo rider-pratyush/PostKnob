@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}Post by {{ tweet.user.username }} | PostKnob{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="card shadow p-4 mx-auto" style="max-width: 500px; background:#22223b;color:#fff;">
+    <div class="d-flex align-items-center mb-3">
+      <img src="{{ tweet.user.profile.avatar_url|default:'https://i.imgur.com/1Q9Z1Zm.png' }}"
+           width="40" height="40"
+           style="border-radius:50%; object-fit:cover; margin-right: 12px;">
+      <span class="fw-bold" style="color:#FFD700;">{{ tweet.user.username }}</span>
+    </div>
+    {% if tweet.photo %}
+      <!-- CLICKABLE IMAGE (opens modal) -->
+      <img src="{{ tweet.photo.url }}"
+           class="img-fluid rounded mb-3"
+           style="max-height:300px; object-fit:cover; cursor: zoom-in;"
+           data-bs-toggle="modal"
+           data-bs-target="#imageModal">
+    {% endif %}
+    <p class="fs-5">{{ tweet.text }}</p>
+    <div class="text-secondary small mb-1">
+      Posted on {{ tweet.created_at|date:"d M Y, H:i" }}
+    </div>
+    <a href="{% url 'tweet_list' %}" class="btn btn-outline-light btn-sm mt-3">&larr; Back to All Posts</a>
+  </div>
+</div>
+
+{% if tweet.photo %}
+<!-- Modal for fullscreen image view -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" style="background:#181826; border:none;">
+      <div class="modal-body p-0" style="max-height:80vh; overflow:auto;">
+        <img src="{{ tweet.photo.url }}" alt="Full Size" style="width:100%; max-width:none; display:block; margin:auto;">
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block title %}Create a Post | PostKnob{% endblock %}
+
+{% block content %}
+<div class="container d-flex flex-column align-items-center justify-content-center" style="min-height:75vh;">
+  {% if user.is_authenticated %}
+    <div class="mb-3 d-flex align-items-center justify-content-center gap-2">
+      <img src="{{ user.profile.avatar_url|default:'https://i.imgur.com/1Q9Z1Zm.png' }}"
+           alt="avatar"
+           width="40" height="40"
+           style="border-radius:50%;object-fit:cover;">
+      <span class="fw-semibold" style="color:#FFD700;">{{ user.username }}</span>
+    </div>
+  {% endif %}
+
+  <div class="card shadow-lg p-4" style="background:#22223b; color:#fff; max-width:480px; width:100%; border-radius:18px;">
+    <div class="text-center mb-3">
+      <span class="logo-icon" style="font-size:2rem;">🕹️</span>
+      <h2 class="fw-bold" style="color:#FFD700;">
+        {% if form.instance.pk %}
+            Edit Your Hobnob
+        {% else %}
+            Let's Post!
+        {% endif %}
+      </h2>
+      <p class="text-secondary mb-0 fs-5">Share your vibe with the knob!</p>
+    </div>
+    <form method="post" enctype="multipart/form-data" autocomplete="off">
+      {% csrf_token %}
+      {% if form.errors %}
+      <div class="alert alert-danger py-2">
+          {% for field in form %}
+              {% for error in field.errors %}
+                  <div>{{ error }}</div>
+              {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+              <div>{{ error }}</div>
+          {% endfor %}
+      </div>
+      {% endif %}
+      {% for field in form %}
+        <div class="mb-3">
+          <label for="{{ field.id_for_label }}" class="form-label" style="color:#FFD700;">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <div class="form-text text-secondary">{{ field.help_text|safe }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button class="btn btn-warning w-100 fw-semibold" type="submit">
+        {% if form.instance.pk %}
+            Update Post
+        {% else %}
+            Submit Post
+        {% endif %}
+      </button>
+    </form>
+    <div class="mt-3 text-center">
+      <a href="{% url 'tweet_list' %}" class="fw-bold text-decoration-none" style="color:#3d63ea;">&#8592; Back to the Hobnob Feed</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}About | PostKnob{% endblock %}
+
+{% block content %}
+<div class="container py-5 d-flex flex-column align-items-center justify-content-center" style="min-height:80vh;">
+    <div class="card shadow-lg p-5 mb-4" style="max-width:640px; width:100%; background:#22223b; border-radius:18px;">
+        <div class="text-center mb-4">
+            <span class="logo-icon" style="font-size:3rem;">🕹️</span>
+            <h1 class="fw-bold" style="color:#FFD700;">About PostKnob</h1>
+        </div>
+        <div style="color:#fff; font-size:1.15rem;">
+            <p>
+                <strong>PostKnob</strong> is a social platform built for genuine connections, creative vibes, and happy moments.
+            </p>
+            <p>
+                <b>Made with ❤️ by Pratyush Kumar</b>, a passionate tech enthusiast, third-year BTech student at <span style="color:#FFD700;">IIT Guwahati</span> (EEE Department).
+            </p>
+            <hr style="border-top:1.5px solid #FFD700;">
+            <h5 class="mb-3" style="color:#FFD700;">Initiative:</h5>
+            <ul style="padding-left:1.2rem;">
+                <li>Increase social bonding among people</li>
+                <li>Promote happiness and creative self-expression</li>
+                <li>Foster lasting friendships &amp; meaningful connections</li>
+            </ul>
+            <div class="text-center mt-4" style="font-size:2rem;">
+                <span>😊 🤝 🌈</span>
+            </div>
+        </div>
+    </div>
+    <footer class="mt-5 text-center w-100" style="color:#b8b8b8; font-size:.95rem;">
+        &copy; {{ now|default:2025 }} PostKnob. All rights reserved. <br>
+        Crafted with <span style="color:#FFD700;">&lt;/&gt;</span> by Pratyush Kumar.
+    </footer>
+</div>
+{% endblock %}
