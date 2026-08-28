@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block title %}{{ title }} — @{{ profile_user.username }} — PostKnob{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center gap-4 animate-fade-in">
+  <a href="{% url 'postknob:profile' username=profile_user.username %}" class="btn-secondary px-3 py-2 text-sm">
+    ← Back to Profile
+  </a>
+  <h1 class="text-2xl font-extrabold text-gold">{{ title }}</h1>
+</div>
+
+{% if users %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {% for u in users %}
+  <div class="card p-4 flex items-center gap-4 animate-slide-up hover:border-gold/30 transition group">
+    <!-- Avatar -->
+    <a href="{% url 'postknob:profile' username=u.username %}" class="flex-shrink-0">
+      <img src="{{ u.profile.get_avatar }}" alt="{{ u.username }}" class="w-16 h-16 rounded-full object-cover ring-2 ring-transparent group-hover:ring-gold transition">
+    </a>
+    
+    <!-- Info -->
+    <div class="flex-1 min-w-0">
+      <a href="{% url 'postknob:profile' username=u.username %}" class="font-bold text-white text-lg hover:text-gold transition truncate block">
+        {{ u.username }}
+      </a>
+      {% if u.profile.bio %}
+      <p class="text-zinc-400 text-sm truncate mt-0.5">{{ u.profile.bio }}</p>
+      {% endif %}
+    </div>
+    
+    <!-- View Button -->
+    <div class="flex-shrink-0">
+      <a href="{% url 'postknob:profile' username=u.username %}" class="btn-secondary text-sm px-4 py-1.5">View</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-12 text-zinc-600 bg-zinc-850 rounded-2xl border border-zinc-800 animate-fade-in">
+  <div class="text-4xl mb-3">👻</div>
+  <p>{{ empty_msg }}</p>
+</div>
+{% endif %}
+
+<!-- Pagination -->
+{% if users.has_other_pages %}
+<div class="flex justify-center gap-2 mt-8">
+  {% if users.has_previous %}
+  <a href="?page={{ users.previous_page_number }}" class="btn-secondary text-sm px-4 py-2">← Prev</a>
+  {% endif %}
+  <span class="btn-secondary text-sm px-4 py-2 cursor-default">{{ users.number }} / {{ users.paginator.num_pages }}</span>
+  {% if users.has_next %}
+  <a href="?page={{ users.next_page_number }}" class="btn-secondary text-sm px-4 py-2">Next →</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

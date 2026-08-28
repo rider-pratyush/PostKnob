@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block title %}My Feed — PostKnob{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-extrabold text-gold mb-6 flex items-center gap-2">📰 Your Feed</h1>
+
+{% if tweets %}
+<div class="flex flex-col gap-4">
+  {% for tweet in tweets %}
+  {% include "partials/post_card.html" %}
+  {% endfor %}
+</div>
+
+{% if tweets.has_other_pages %}
+<div class="flex justify-center gap-2 mt-8">
+  {% if tweets.has_previous %}
+  <a href="?page={{ tweets.previous_page_number }}" class="btn-secondary text-sm px-4 py-2">← Prev</a>
+  {% endif %}
+  <span class="btn-secondary text-sm px-4 py-2 cursor-default">{{ tweets.number }} / {{ tweets.paginator.num_pages }}</span>
+  {% if tweets.has_next %}
+  <a href="?page={{ tweets.next_page_number }}" class="btn-secondary text-sm px-4 py-2">Next →</a>
+  {% endif %}
+</div>
+{% endif %}
+{% else %}
+<div class="text-center py-16 text-zinc-500">
+  <div class="text-5xl mb-4">🔇</div>
+  <p class="text-lg font-semibold">Your feed is empty</p>
+  <p class="text-sm mt-1">Follow some hobnobbers from the <a href="{% url 'postknob:tweet_list' %}" class="text-gold hover:underline">Explore</a> page!</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% comment %}Bookmark button partial — replaced via HTMX{% endcomment %}
+<button
+  hx-post="{% url 'postknob:bookmark_toggle' pk=tweet.id %}"
+  hx-target="this"
+  hx-swap="outerHTML"
+  title="{% if bookmarked %}Remove bookmark{% else %}Save post{% endif %}"
+  class="flex items-center gap-1 text-xs transition {% if bookmarked %}text-gold hover:text-zinc-400{% else %}text-zinc-500 hover:text-gold{% endif %}">
+  <svg class="w-4 h-4" fill="{% if bookmarked %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+  </svg>
+</button>

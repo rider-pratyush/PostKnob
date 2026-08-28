@@ -1,42 +1,75 @@
 {% extends "layout.html" %}
-
-{% block title %}Post by {{ tweet.user.username }} | PostKnob{% endblock %}
+{% block title %}Post by {{ tweet.user.username }} — PostKnob{% endblock %}
+{% block meta_description %}{{ tweet.text|truncatechars:160 }}{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-  <div class="card shadow p-4 mx-auto" style="max-width: 500px; background:#22223b;color:#fff;">
-    <div class="d-flex align-items-center mb-3">
-      <img src="{{ tweet.user.profile.avatar_url|default:'https://i.imgur.com/1Q9Z1Zm.png' }}"
-           width="40" height="40"
-           style="border-radius:50%; object-fit:cover; margin-right: 12px;">
-      <span class="fw-bold" style="color:#FFD700;">{{ tweet.user.username }}</span>
-    </div>
-    {% if tweet.photo %}
-      <!-- CLICKABLE IMAGE (opens modal) -->
-      <img src="{{ tweet.photo.url }}"
-           class="img-fluid rounded mb-3"
-           style="max-height:300px; object-fit:cover; cursor: zoom-in;"
-           data-bs-toggle="modal"
-           data-bs-target="#imageModal">
-    {% endif %}
-    <p class="fs-5">{{ tweet.text }}</p>
-    <div class="text-secondary small mb-1">
-      Posted on {{ tweet.created_at|date:"d M Y, H:i" }}
-    </div>
-    <a href="{% url 'tweet_list' %}" class="btn btn-outline-light btn-sm mt-3">&larr; Back to All Posts</a>
-  </div>
-</div>
+<div class="max-w-2xl mx-auto">
+  <!-- Back -->
+  <a href="{% url 'postknob:tweet_list' %}" class="inline-flex items-center gap-1 text-zinc-400 hover:text-gold text-sm mb-4 transition">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+    Back to Explore
+  </a>
 
-{% if tweet.photo %}
-<!-- Modal for fullscreen image view -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content" style="background:#181826; border:none;">
-      <div class="modal-body p-0" style="max-height:80vh; overflow:auto;">
-        <img src="{{ tweet.photo.url }}" alt="Full Size" style="width:100%; max-width:none; display:block; margin:auto;">
+  <!-- Post card -->
+  <div class="card p-5 animate-fade-in">
+    <!-- Author -->
+    <div class="flex items-center gap-3 mb-4">
+      <a href="{% url 'postknob:profile' username=tweet.user.username %}">
+        <img src="{{ tweet.user.profile.get_avatar }}" alt="{{ tweet.user.username }}" class="w-12 h-12 rounded-full object-cover ring-2 ring-gold/50 hover:ring-gold transition">
+      </a>
+      <div>
+        <a href="{% url 'postknob:profile' username=tweet.user.username %}" class="font-bold text-gold hover:underline">{{ tweet.user.username }}</a>
+        <p class="text-zinc-500 text-xs">{{ tweet.created_at|date:"d M Y, H:i" }}</p>
       </div>
+      {% if tweet.user == user %}
+      <div class="ml-auto flex gap-2">
+        <a href="{% url 'postknob:tweet_edit' tweet_id=tweet.id %}" class="btn-secondary text-xs px-3 py-1.5">Edit</a>
+        <a href="{% url 'postknob:tweet_delete' tweet_id=tweet.id %}" class="text-xs text-red-400 border border-red-400/30 px-3 py-1.5 rounded-xl hover:bg-red-900/20 transition">Delete</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Image -->
+    {% if tweet.photo %}
+    <img src="{{ tweet.photo.url }}" alt="Post image" class="w-full rounded-xl mb-4 object-cover max-h-96 cursor-zoom-in" id="post-image">
+    {% endif %}
+
+    <!-- Text -->
+    <p class="text-zinc-100 text-base leading-relaxed mb-3">{{ tweet.text }}</p>
+
+    <!-- Hashtags -->
+    {% if tweet.hashtags.all %}
+    <div class="flex flex-wrap gap-1 mb-4">
+      {% for tag in tweet.hashtags.all %}
+      <a href="{% url 'postknob:hashtag' slug=tag.slug %}" class="text-xs text-gold bg-gold/10 px-2 py-0.5 rounded-full hover:bg-gold/20 transition">#{{ tag.name }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Actions bar -->
+    <div class="flex items-center gap-4 py-3 border-t border-zinc-800">
+      {% if user.is_authenticated %}
+      <!-- Like -->
+      <div hx-target="this" hx-swap="outerHTML">
+        {% include "partials/like_btn.html" with tweet=tweet liked=liked like_count=tweet.likes.count %}
+      </div>
+      <!-- Bookmark -->
+      <div hx-target="this" hx-swap="outerHTML" class="ml-auto">
+        {% include "partials/bookmark_btn.html" with tweet=tweet bookmarked=bookmarked %}
+      </div>
+      {% else %}
+      <span class="text-zinc-500 text-xs">❤️ {{ tweet.likes.count }}</span>
+      {% endif %}
     </div>
   </div>
+
+  <!-- Comments section -->
+  <div class="mt-4">
+    <h2 class="font-bold text-zinc-300 mb-3 flex items-center gap-2" id="comments">
+      <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+      Comments ({{ tweet.comments.count }})
+    </h2>
+    {% include "partials/comment_section.html" with tweet=tweet comments=comments comment_form=comment_form %}
+  </div>
 </div>
-{% endif %}
 {% endblock %}

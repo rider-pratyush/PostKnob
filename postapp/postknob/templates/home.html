@@ -1,50 +1,63 @@
 {% extends "layout.html" %}
+{% block title %}PostKnob 🕹️ — Home{% endblock %}
 
 {% block content %}
-<div class="message text-center" id="welcome-message">
-  <span class="logo-icon" style="font-size:2.5rem;">🕹️</span>
-  <h1 class="fw-bold mb-3" style="color:#FFD700; font-size:2.5rem;">Welcome to PostKnob</h1>
-  <div class="lead mb-2" style="color:#fff;">Unleash your vibe, share your story, hobnob your world!</div>
-  <a href="{% url 'tweet_create' %}" class="btn btn-warning mt-3 px-4 fw-bold" style="border-radius: 14px;">+ Create Your First Post</a>
+<!-- Hero -->
+<div class="text-center py-12 animate-fade-in">
+  <div class="text-6xl mb-4">🕹️</div>
+  <h1 class="text-4xl font-extrabold text-gold mb-3 tracking-tight">Welcome to PostKnob</h1>
+  <p class="text-zinc-400 text-lg mb-8">Unleash your vibe, share your story, hobnob your world!</p>
+  {% if user.is_authenticated %}
+  <a href="{% url 'postknob:tweet_create' %}" class="btn-primary text-lg px-8 py-3 inline-block rounded-2xl shadow-lg shadow-yellow-900/20">
+    + Create Your First Post
+  </a>
+  {% else %}
+  <div class="flex justify-center gap-3">
+    <a href="{% url 'postknob:register' %}" class="btn-primary text-lg px-8 py-3 rounded-2xl">Join PostKnob</a>
+    <a href="{% url 'login' %}" class="btn-secondary text-lg px-8 py-3 rounded-2xl">Login</a>
+  </div>
+  {% endif %}
 </div>
 
+<!-- Trending -->
 {% if trending_posts %}
-  <div class="container mt-5">
-    <h2 class="mb-4" style="color:#FFD700; font-size:1.5rem;">Trending on PostKnob</h2>
-    <div class="row g-4">
-      {% for post in trending_posts %}
-        <div class="col-12 col-sm-6 col-md-3 d-flex">
-          <div class="card flex-fill post-card" style="background:#22223b; color:#fff; border-radius: 14px;">
-            {% if post.photo.name %}
-              <img src="{{ post.photo.url }}" class="card-img-top" style="max-height:120px; object-fit:cover; border-top-left-radius:14px; border-top-right-radius:14px;">
-            {% endif %}
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title" style="color:#FFD700;">{{ post.user.username }}</h5>
-              <p class="card-text flex-grow-1" style="font-size:.98rem;">{{ post.text|truncatechars:70 }}</p>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
+<section class="mt-8">
+  <h2 class="text-xl font-bold text-gold mb-4 flex items-center gap-2">🔥 Trending on PostKnob</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for post in trending_posts %}
+    <a href="{% url 'postknob:tweet_detail' pk=post.id %}" class="card p-4 hover:border-gold/40 transition group animate-slide-up">
+      <div class="flex items-center gap-2 mb-2">
+        <img src="{{ post.user.profile.get_avatar }}" class="w-7 h-7 rounded-full object-cover" alt="">
+        <span class="text-gold text-xs font-semibold">{{ post.user.username }}</span>
+        <span class="ml-auto text-zinc-600 text-xs">{{ post.created_at|timesince }} ago</span>
+      </div>
+      {% if post.photo %}
+      <img src="{{ post.photo.url }}" class="w-full h-32 object-cover rounded-lg mb-2 group-hover:opacity-90 transition" alt="">
+      {% endif %}
+      <p class="text-zinc-300 text-sm leading-relaxed">{{ post.text|truncatechars:120 }}</p>
+      <div class="flex gap-3 mt-2 text-zinc-500 text-xs">
+        <span>❤️ {{ post.likes.count }}</span>
+        <span>💬 {{ post.comments.count }}</span>
+      </div>
+    </a>
+    {% endfor %}
   </div>
+</section>
 {% endif %}
 
+<!-- Hobnobbers -->
 {% if hobnobbers %}
-  <div class="container mt-5 mb-3">
-    <h2 class="mb-3" style="color:#FFD700; font-size:1.2rem;">Meet the Hobnobbers</h2>
-    <div class="d-flex flex-wrap gap-3">
-      {% for user in hobnobbers %}
-        <div class="rounded-pill px-3 py-2 d-flex align-items-center"
-             style="background:#22223b; color:#FFD700; font-weight:600; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
-          <img src="{{ user.profile.avatar_url|default:'https://i.imgur.com/1Q9Z1Zm.png' }}"
-               alt="avatar"
-               width="32" height="32"
-               style="border-radius:50%;object-fit:cover;margin-right:8px;">
-          {{ user.username }}
-        </div>
-      {% endfor %}
-    </div>
+<section class="mt-10">
+  <h2 class="text-xl font-bold text-gold mb-4 flex items-center gap-2">👥 Meet the Hobnobbers</h2>
+  <div class="flex flex-wrap gap-3">
+    {% for u in hobnobbers %}
+    <a href="{% url 'postknob:profile' username=u.username %}"
+       class="flex items-center gap-2 bg-zinc-800 border border-zinc-700 hover:border-gold/50 px-3 py-2 rounded-full transition">
+      <img src="{{ u.profile.get_avatar }}" alt="{{ u.username }}" class="w-7 h-7 rounded-full object-cover">
+      <span class="text-sm font-medium text-zinc-200 hover:text-gold transition">{{ u.username }}</span>
+    </a>
+    {% endfor %}
   </div>
+</section>
 {% endif %}
-
 {% endblock %}

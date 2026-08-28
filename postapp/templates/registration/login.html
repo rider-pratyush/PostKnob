@@ -1,32 +1,38 @@
 {% extends "layout.html" %}
-{% block title %}Login | Postknob{% endblock %}
+{% block title %}Login — PostKnob{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
-  <div class="card shadow p-4 login-card" style="max-width: 400px; width: 100%; border-radius: 18px;">
-    <div class="text-center mb-4">
-      <span class="logo-icon" style="font-size:2.2rem;">🕹️</span>
-      <h2 class="fw-bold mb-2" style="color: #FFD700; letter-spacing: 1px;">Login to Postknob</h2>
-      <!-- Slang subtitle here -->
-      <p class="text-secondary mb-1">Step back into the hobnob zone!</p>
+<div class="flex justify-center items-center min-h-[70vh]">
+  <div class="w-full max-w-md animate-slide-up">
+    <div class="card p-8">
+      <div class="text-center mb-8">
+        <div class="text-5xl mb-3">🕹️</div>
+        <h1 class="text-3xl font-extrabold text-gold tracking-tight">Login to PostKnob</h1>
+        <p class="text-zinc-500 mt-1 text-sm">Step back into the hobnob zone!</p>
+      </div>
+      <form method="post" autocomplete="off" class="flex flex-col gap-4">
+        {% csrf_token %}
+        {% if form.errors %}
+        <div class="bg-red-900/30 border border-red-700 text-red-300 text-sm px-4 py-3 rounded-xl">
+          Invalid username or password.
+        </div>
+        {% endif %}
+        <div>
+          <label for="id_username" class="block text-sm font-medium text-zinc-300 mb-1.5">Username</label>
+          <input type="text" name="username" id="id_username" required autofocus
+            class="w-full bg-zinc-800 text-white border border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold placeholder-zinc-500">
+        </div>
+        <div>
+          <label for="id_password" class="block text-sm font-medium text-zinc-300 mb-1.5">Password</label>
+          <input type="password" name="password" id="id_password" required
+            class="w-full bg-zinc-800 text-white border border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold placeholder-zinc-500">
+        </div>
+        <button type="submit" class="btn-primary w-full py-3 text-base mt-2">Log In 🔑</button>
+      </form>
+      <p class="mt-5 text-center text-zinc-500 text-sm">
+        Not in the club yet? <a href="{% url 'postknob:register' %}" class="text-gold font-semibold hover:underline">Become a Hobnobber!</a>
+      </p>
     </div>
-    <form method="post" autocomplete="off">
-      {% csrf_token %}
-      <div class="mb-3">
-        <label for="id_username" class="form-label">Username</label>
-        <input type="text" name="username" class="form-control" id="id_username" required autofocus>
-      </div>
-      <div class="mb-3">
-        <label for="id_password" class="form-label">Password</label>
-        <input type="password" name="password" class="form-control" id="id_password" required>
-      </div>
-      <button class="btn btn-warning w-100 fw-semibold" type="submit">Log In</button>
-    </form>
-    <!-- Fun slang prompt at the bottom -->
-    <p class="mt-3 mb-0 text-center text-secondary" style="font-size: 1rem;">
-      Not in the club yet?
-      <a href="{% url 'register' %}" class="fw-bold text-decoration-none" style="color: #3d63ea;">Become a hobnobber!</a>
-    </p>
   </div>
 </div>
 {% endblock %}

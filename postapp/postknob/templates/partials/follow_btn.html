@@ -1,0 +1,14 @@
+{% comment %}Follow button partial — HTMX swap{% endcomment %}
+<div id="follow-section-{{ profile_user.id }}" class="flex items-center gap-3">
+  <button
+    hx-post="{% url 'postknob:follow_toggle' username=profile_user.username %}"
+    hx-target="#follow-section-{{ profile_user.id }}"
+    hx-swap="outerHTML"
+    class="{% if is_following %}btn-secondary text-red-400 border-red-400/40 hover:bg-red-900/20{% else %}btn-primary{% endif %} text-sm px-5 py-2">
+    {% if is_following %}Unfollow{% else %}Follow{% endif %}
+  </button>
+  <span class="text-zinc-400 text-sm"><span class="font-bold text-white">{{ follower_count }}</span> followers</span>
+</div>
+
+<!-- OOB Swap for the main profile stats -->
+<span id="follower-count-{{ profile_user.id }}" hx-swap-oob="true" class="font-black text-white text-lg leading-none group-hover:text-gold transition">{{ follower_count }}</span>

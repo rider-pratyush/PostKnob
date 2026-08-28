@@ -1,0 +1,78 @@
+name: PostKnob CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install linters
+        run: pip install ruff black
+      - name: Ruff check
+        run: ruff check postapp/
+      - name: Black check
+        run: black --check postapp/
+
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: postknob_test
+          POSTGRES_USER: postknob
+          POSTGRES_PASSWORD: test_secret
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run migrations
+        run: python postapp/manage.py migrate
+        env:
+          DJANGO_SETTINGS_MODULE: postapp.settings.dev
+          DATABASE_URL: postgresql://postknob:test_secret@localhost:5432/postknob_test
+          SECRET_KEY: ci-secret-key-not-real
+          DEBUG: "True"
+
+      - name: Run tests with coverage
+        run: |
+          cd postapp
+          python -m pytest postknob/tests/ -v --cov=postknob --cov-report=term-missing --cov-report=xml
+        env:
+          DJANGO_SETTINGS_MODULE: postapp.settings.dev
+          DATABASE_URL: postgresql://postknob:test_secret@localhost:5432/postknob_test
+          SECRET_KEY: ci-secret-key-not-real
+          DEBUG: "True"
+          REDIS_URL: redis://localhost:6379/0
+          CELERY_BROKER_URL: redis://localhost:6379/0
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: postapp/coverage.xml
+          fail_ci_if_error: false

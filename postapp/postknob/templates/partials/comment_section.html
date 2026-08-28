@@ -1,0 +1,43 @@
+{% comment %}Comment section partial — HTMX swap{% endcomment %}
+<div id="comment-section" class="flex flex-col gap-3 mt-4">
+  {% for comment in comments %}
+  <div class="flex gap-3 animate-fade-in" id="comment-{{ comment.id }}">
+    <img src="{{ comment.user.profile.get_avatar }}" alt="{{ comment.user.username }}" class="w-8 h-8 rounded-full object-cover flex-shrink-0 ring-1 ring-zinc-700">
+    <div class="flex-1 bg-zinc-800/60 rounded-xl px-3 py-2">
+      <div class="flex items-baseline justify-between gap-2">
+        <a href="{% url 'postknob:profile' username=comment.user.username %}" class="text-gold text-xs font-semibold hover:underline">{{ comment.user.username }}</a>
+        <span class="text-zinc-600 text-xs">{{ comment.created_at|timesince }} ago</span>
+      </div>
+      <p class="text-zinc-200 text-sm mt-0.5">{{ comment.body }}</p>
+    </div>
+    {% if comment.user == request.user %}
+    <button
+      hx-delete="{% url 'postknob:comment_delete' pk=comment.id %}"
+      hx-target="#comment-section"
+      hx-swap="outerHTML"
+      hx-confirm="Delete this comment?"
+      class="self-start text-zinc-600 hover:text-red-400 transition mt-1">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+    {% endif %}
+  </div>
+  {% empty %}
+  <p class="text-zinc-600 text-sm text-center py-4">No comments yet. Be the first to hobnob! 💬</p>
+  {% endfor %}
+
+  <!-- Comment form -->
+  {% if request.user.is_authenticated %}
+  <form
+    hx-post="{% url 'postknob:comment_create' pk=tweet.id %}"
+    hx-target="#comment-section"
+    hx-swap="outerHTML"
+    class="flex gap-2 items-center mt-2">
+    {% csrf_token %}
+    <img src="{{ request.user.profile.get_avatar }}" alt="you" class="w-8 h-8 rounded-full object-cover flex-shrink-0 ring-1 ring-gold/50">
+    {{ comment_form.body }}
+    <button type="submit" class="bg-gold text-black font-bold text-xs px-3 py-2 rounded-lg hover:bg-yellow-300 transition flex-shrink-0">Post</button>
+  </form>
+  {% else %}
+  <p class="text-center text-zinc-500 text-sm"><a href="{% url 'login' %}" class="text-gold hover:underline">Login</a> to comment.</p>
+  {% endif %}
+</div>

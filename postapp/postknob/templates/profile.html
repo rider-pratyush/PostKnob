@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block title %}@{{ profile_user.username }} — PostKnob{% endblock %}
+
+{% block content %}
+<!-- Profile header -->
+<div class="card p-6 mb-6 animate-fade-in">
+  <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+    <!-- Avatar -->
+    <img src="{{ profile_user.profile.get_avatar }}" alt="{{ profile_user.username }}"
+         class="w-24 h-24 rounded-full object-cover ring-4 ring-gold/40 flex-shrink-0">
+    <!-- Info -->
+    <div class="flex-1 min-w-0">
+      <h1 class="text-2xl font-extrabold text-white">{{ profile_user.username }}</h1>
+      {% if profile_user.profile.location %}
+      <p class="text-zinc-500 text-sm flex items-center gap-1 mt-0.5">📍 {{ profile_user.profile.location }}</p>
+      {% endif %}
+      {% if profile_user.profile.bio %}
+      <p class="text-zinc-300 text-sm mt-2 leading-relaxed">{{ profile_user.profile.bio }}</p>
+      {% endif %}
+      {% if profile_user.profile.website %}
+      <a href="{{ profile_user.profile.website }}" target="_blank" rel="noopener" class="text-gold text-sm hover:underline flex items-center gap-1 mt-1">
+        🔗 {{ profile_user.profile.website|truncatechars:40 }}
+      </a>
+      {% endif %}
+      <!-- Stats (with HTMX OOB target ID) -->
+      <div id="profile-stats-{{ profile_user.id }}" class="flex gap-6 mt-4 text-sm bg-zinc-800/50 inline-flex p-3 rounded-xl border border-zinc-700/50">
+        <div class="flex flex-col items-center">
+          <span class="font-black text-white text-lg leading-none">{{ posts.paginator.count }}</span> 
+          <span class="text-zinc-400 text-xs uppercase tracking-wider font-semibold mt-1">Posts</span>
+        </div>
+        <a href="{% url 'postknob:followers_list' username=profile_user.username %}" class="flex flex-col items-center hover:text-gold transition group">
+          <span id="follower-count-{{ profile_user.id }}" class="font-black text-white text-lg leading-none group-hover:text-gold transition">{{ follower_count }}</span> 
+          <span class="text-zinc-400 text-xs uppercase tracking-wider font-semibold mt-1">Followers</span>
+        </a>
+        <a href="{% url 'postknob:following_list' username=profile_user.username %}" class="flex flex-col items-center hover:text-gold transition group">
+          <span class="font-black text-white text-lg leading-none group-hover:text-gold transition">{{ following_count }}</span> 
+          <span class="text-zinc-400 text-xs uppercase tracking-wider font-semibold mt-1">Following</span>
+        </a>
+      </div>
+    </div>
+    <!-- Actions -->
+    <div class="flex flex-col gap-2 flex-shrink-0">
+      {% if user.is_authenticated %}
+        {% if user == profile_user %}
+        <a href="{% url 'postknob:profile_edit' %}" class="btn-secondary text-sm px-4 py-2">✏️ Edit Profile</a>
+        {% else %}
+          {% include "partials/follow_btn.html" with profile_user=profile_user is_following=is_following follower_count=follower_count %}
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Posts grid -->
+<h2 class="text-lg font-bold text-zinc-300 mb-4">Posts</h2>
+{% if posts %}
+<div class="flex flex-col gap-4">
+  {% for post in posts %}
+  {% include "partials/post_card.html" with tweet=post %}
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-12 text-zinc-600">
+  <div class="text-4xl mb-3">📭</div>
+  <p>No posts yet!</p>
+</div>
+{% endif %}
+
+<!-- Pagination -->
+{% if posts.has_other_pages %}
+<div class="flex justify-center gap-2 mt-6">
+  {% if posts.has_previous %}
+  <a href="?page={{ posts.previous_page_number }}" class="btn-secondary text-sm px-4 py-2">← Prev</a>
+  {% endif %}
+  <span class="btn-secondary text-sm px-4 py-2 cursor-default">{{ posts.number }} / {{ posts.paginator.num_pages }}</span>
+  {% if posts.has_next %}
+  <a href="?page={{ posts.next_page_number }}" class="btn-secondary text-sm px-4 py-2">Next →</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

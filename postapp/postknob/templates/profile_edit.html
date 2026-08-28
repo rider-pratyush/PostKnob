@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block title %}Edit Profile — PostKnob{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto">
+  <div class="card p-6 animate-fade-in">
+    <h1 class="text-2xl font-extrabold text-gold mb-6">✏️ Edit Profile</h1>
+    <form method="post" enctype="multipart/form-data" class="flex flex-col gap-5">
+      {% csrf_token %}
+      <div>
+        <label class="block text-sm font-medium text-zinc-300 mb-1.5">Bio</label>
+        {{ form.bio }}
+        {% if form.bio.errors %}<p class="text-red-400 text-xs mt-1">{{ form.bio.errors|join:", " }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-zinc-300 mb-1.5">Profile Photo</label>
+        {% if user.profile.avatar %}
+        <img src="{{ user.profile.avatar.url }}" class="w-16 h-16 rounded-full object-cover ring-2 ring-gold mb-2" alt="current">
+        {% endif %}
+        {{ form.avatar }}
+        {% if form.avatar.errors %}<p class="text-red-400 text-xs mt-1">{{ form.avatar.errors|join:", " }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-zinc-300 mb-1.5">Website</label>
+        {{ form.website }}
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-zinc-300 mb-1.5">Location</label>
+        {{ form.location }}
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="btn-primary flex-1 py-2.5">Save Profile</button>
+        <a href="{% url 'postknob:profile' username=user.username %}" class="btn-secondary px-5 py-2.5 text-center">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

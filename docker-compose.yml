@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+
+
+  # ─── Redis ──────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Django Web ─────────────────────────────────────────────────────────
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DEBUG: "True"
+      SECRET_KEY: "docker-compose-secret-change-in-prod"
+      # DATABASE_URL is removed to use local db.sqlite3
+      REDIS_URL: "redis://redis:6379/0"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      ALLOWED_HOSTS: "localhost,127.0.0.1"
+      DJANGO_SETTINGS_MODULE: "postapp.settings.dev"
+    volumes:
+      - ./postapp:/app
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             gunicorn postapp.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+
+  # ─── Celery Worker ──────────────────────────────────────────────────────
+  celery:
+    build: .
+    restart: unless-stopped
+    environment:
+      REDIS_URL: "redis://redis:6379/0"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      DJANGO_SETTINGS_MODULE: "postapp.settings.dev"
+    volumes:
+      - ./postapp:/app
+    depends_on:
+      - redis
+    command: celery -A postapp worker -l info --concurrency 2
+
+  # ─── Celery Beat ────────────────────────────────────────────────────────
+  celery-beat:
+    build: .
+    restart: unless-stopped
+    environment:
+      REDIS_URL: "redis://redis:6379/0"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      DJANGO_SETTINGS_MODULE: "postapp.settings.dev"
+    volumes:
+      - ./postapp:/app
+    depends_on:
+      - redis
+      - celery
+    command: celery -A postapp beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler

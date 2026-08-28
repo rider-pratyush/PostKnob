@@ -1,5 +1,43 @@
-asgiref==3.8.1
+# PostKnob requirements
+# ────────────────────────────────────────────────────────────
+
+# Core Django
 Django==5.2.2
+asgiref==3.8.1
 sqlparse==0.5.3
 tzdata==2025.2
 pillow==11.2.1
+whitenoise==6.12.0
+django-environ==0.14.0
+django-extensions==4.1
+gunicorn==22.0.0
+
+# REST API
+djangorestframework==3.18.0
+djangorestframework-simplejwt==5.5.1
+drf-spectacular==0.30.0
+django-filter==26.1
+django-cors-headers==4.9.0
+
+# Celery + Redis
+celery==5.6.3
+redis==8.1.0
+django-celery-beat==2.9.0
+
+# Database (PostgreSQL in production)
+psycopg2-binary==2.9.10
+
+# Monitoring & Logging
+sentry-sdk[django]==2.68.1
+python-json-logger==4.2.0
+
+# Testing
+factory-boy==3.3.3
+pytest==9.1.1
+pytest-django==4.14.0
+pytest-cov==7.1.0
+Faker==40.37.0
+
+# Linting & Formatting
+ruff==0.16.4
+black==26.5.1

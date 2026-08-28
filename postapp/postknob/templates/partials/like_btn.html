@@ -1,0 +1,11 @@
+{% comment %}Like button partial — replaced via HTMX{% endcomment %}
+<button
+  hx-post="{% url 'postknob:like_toggle' pk=tweet.id %}"
+  hx-target="this"
+  hx-swap="outerHTML"
+  class="flex items-center gap-1 text-xs transition {% if liked %}text-red-400 hover:text-zinc-400{% else %}text-zinc-500 hover:text-red-400{% endif %}">
+  <svg class="w-4 h-4" fill="{% if liked %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/>
+  </svg>
+  <span>{{ like_count }}</span>
+</button>
